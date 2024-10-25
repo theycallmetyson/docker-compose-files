@@ -1,0 +1,94 @@
+services:
+
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Stockholm
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "-S", "--max-time", "2", "http://localhost:6767"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - /config
+      - /share/Public/movies:/movies
+      - /share/Public/series:/series
+      - /share/Public/anime:/anime
+    ports:
+      - 10010:6767
+    networks:
+      - media_network
+    restart: unless-stopped
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Stockholm
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "-S", "--max-time", "2", "http://localhost:9696"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - /config
+    ports:
+      - 10011:9696
+    networks:
+      - media_network
+    restart: unless-stopped
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Stockholm
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "-S", "--max-time", "2", "http://localhost:7878"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - /config
+      - /share/Public/movies:/movies
+      - /share/Public/anime:/anime
+      - /share/Public/downloads:/downloads
+    ports:
+      - 10012:7878
+    networks:
+      - media_network
+    restart: unless-stopped
+  
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Stockholm
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "-S", "--max-time", "2", "http://localhost:8989"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - /config
+      - /share/Public/series:/series
+      - /share/Public/anime:/anime
+      - /share/Public/downloads:/downloads
+    ports:
+      - 10013:8989
+    networks:
+      - media_network
+    restart: unless-stopped
+
+networks:
+  media_network:
+    name: media_network
